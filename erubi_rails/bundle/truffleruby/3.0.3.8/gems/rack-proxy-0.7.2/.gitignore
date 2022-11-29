@@ -1,6 +1,0 @@
-pkg/*
-*.gem
-.bundle
-!*.so
-!*.o
-!*.c
