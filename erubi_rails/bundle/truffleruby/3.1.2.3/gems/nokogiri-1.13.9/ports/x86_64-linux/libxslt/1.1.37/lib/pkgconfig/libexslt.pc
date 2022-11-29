@@ -1,0 +1,13 @@
+prefix=/home/sopi/Documents/Side_projects/truffleruby/bench/erubi_rails/bundle/truffleruby/3.1.2.3/gems/nokogiri-1.13.9/ports/x86_64-linux/libxslt/1.1.37
+exec_prefix=${prefix}
+libdir=/home/sopi/Documents/Side_projects/truffleruby/bench/erubi_rails/bundle/truffleruby/3.1.2.3/gems/nokogiri-1.13.9/ports/x86_64-linux/libxslt/1.1.37/lib
+includedir=${prefix}/include
+
+
+Name: libexslt
+Version: 0.8.20
+Description: EXSLT Extension library
+Requires: libxml-2.0, libxslt
+Cflags: -I${includedir}
+Libs: -L${libdir} -lexslt
+Libs.private: -lm 
