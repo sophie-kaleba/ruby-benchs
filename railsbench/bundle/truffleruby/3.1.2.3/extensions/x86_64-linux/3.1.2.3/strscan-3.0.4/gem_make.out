@@ -1,0 +1,11 @@
+current directory: /home/sopi/Documents/Side_projects/truffleruby/bench/railsbench/bundle/truffleruby/3.1.2.3/gems/strscan-3.0.4/ext/strscan
+/home/sopi/Documents/Side_projects/graal/sdk/mxbuild/linux-amd64/GRAALVM_A33290E019_JAVA11/graalvm-a33290e019-java11-23.0.0-dev/languages/ruby/bin/truffleruby -I /home/sopi/Documents/Side_projects/graal/sdk/mxbuild/linux-amd64/GRAALVM_A33290E019_JAVA11/graalvm-a33290e019-java11-23.0.0-dev/languages/ruby/lib/mri -r ./siteconf20221129-12921-8cp6hm.rb extconf.rb
+
+current directory: /home/sopi/Documents/Side_projects/truffleruby/bench/railsbench/bundle/truffleruby/3.1.2.3/gems/strscan-3.0.4/ext/strscan
+make DESTDIR\= clean
+
+current directory: /home/sopi/Documents/Side_projects/truffleruby/bench/railsbench/bundle/truffleruby/3.1.2.3/gems/strscan-3.0.4/ext/strscan
+make DESTDIR\=
+
+current directory: /home/sopi/Documents/Side_projects/truffleruby/bench/railsbench/bundle/truffleruby/3.1.2.3/gems/strscan-3.0.4/ext/strscan
+make DESTDIR\= install
