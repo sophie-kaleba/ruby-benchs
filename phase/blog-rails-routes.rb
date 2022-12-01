@@ -7,7 +7,7 @@ class BlogRailsRoutes < Benchmarks
 
   def initialize
     Dir.chdir("#{__dir__}/../railsbench") do
-      JT.ruby(*%w[-S bundle exec bin/rails db:migrate db:seed RAILS_ENV=production])
+      JT.ruby_rebench(*%w[-S bundle exec bin/rails db:migrate db:seed RAILS_ENV=production])
     end
 
     ENV['RAILS_ENV'] ||= 'production'
