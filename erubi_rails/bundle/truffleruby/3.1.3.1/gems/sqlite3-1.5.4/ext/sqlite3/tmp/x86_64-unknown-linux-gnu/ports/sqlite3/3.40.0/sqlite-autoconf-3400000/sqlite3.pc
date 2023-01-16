@@ -1,0 +1,13 @@
+# Package Information for pkg-config
+
+prefix=/home/sopi/Documents/Side_projects/truffleruby/phd-bench/erubi_rails/bundle/truffleruby/3.1.3.1/gems/sqlite3-1.5.4/ports/x86_64-unknown-linux-gnu/sqlite3/3.40.0
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: SQLite
+Description: SQL database engine
+Version: 3.40.0
+Libs: -L${libdir} -lsqlite3
+Libs.private: -lz -lm -ldl -lpthread 
+Cflags: -I${includedir}
