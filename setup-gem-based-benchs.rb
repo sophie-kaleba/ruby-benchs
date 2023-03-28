@@ -10,7 +10,7 @@ RAILSBENCH_DIR = File.expand_path('../railsbench', __FILE__)
 
 def self.bundle_install(bench_path)
   Dir.chdir(bench_path) do
-    JT.ruby(*%w[-S bundle install])
+    JT.ruby_rebench(*%w[-S bundle install])
   end
 end
 
