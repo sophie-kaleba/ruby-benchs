@@ -4,8 +4,13 @@
 # we don't run "bundle install" above.
 $LOAD_PATH.unshift "#{__dir__}/../lee"
 $LOAD_PATH.unshift "#{__dir__}/../lee/lib"
-require "#{__dir__}/../lee/bundle/bundler/setup"
-require "lee"
+Dir.chdir("#{__dir__}/../lee") do
+  require 'bundler/setup'
+  require 'lee'
+end
+
+#require "#{__dir__}/../lee/bundle/bundler/setup"
+#require "lee"
 
 class LeeBench < Benchmarks
 

@@ -1,6 +1,10 @@
 $LOAD_PATH.unshift "#{__dir__}/../erubi_rails"
-require "#{__dir__}/../erubi_rails/bundle/bundler/setup"
-require_relative '../../tool/jt.rb'
+Dir.chdir("#{__dir__}/../erubi_rails") do
+  require 'bundler/setup'
+  require 'config/environment'
+end
+#require "#{__dir__}/../erubi_rails/bundle/bundler/setup"
+#require_relative '../../tool/jt.rb'
 EXPECTED_TEXT_SIZE = 9369
 
 class ERubiRails < Benchmarks 

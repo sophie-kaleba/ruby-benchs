@@ -1,6 +1,8 @@
 $LOAD_PATH.unshift "#{__dir__}/../mail"
-require "#{__dir__}/../mail/bundle/bundler/setup"
-require "mail"
+Dir.chdir("#{__dir__}/../mail") do
+  require 'bundler/setup'
+  require 'mail'
+end
 
 class MailBench < Benchmarks
   def initialize

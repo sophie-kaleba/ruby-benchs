@@ -1,7 +1,9 @@
 $LOAD_PATH.unshift "#{__dir__}/../hexapdf"
-require "#{__dir__}/../hexapdf/bundle/bundler/setup"
-require "hexapdf"
-require "fileutils"
+Dir.chdir("#{__dir__}/../hexapdf") do
+  require 'bundler/setup'
+  require 'hexapdf'
+  require "fileutils"
+end
 
   # Based on https://github.com/gettalong/hexapdf/blob/master/benchmark/line_wrapping/hexapdf_composer.rb
   # Take a copy of The Odyssey (trans: Samuel Butler) and paginate it to a given line width, in this case 50.

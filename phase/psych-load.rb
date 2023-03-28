@@ -1,6 +1,8 @@
 $LOAD_PATH.unshift "#{__dir__}/../psych-load"
-require "#{__dir__}/../psych-load/bundle/bundler/setup"
-require 'psych'
+Dir.chdir("#{__dir__}/../mail") do
+  require 'bundler/setup'
+  require 'psych'
+end
 
 class PsychLoad < Benchmarks
 
