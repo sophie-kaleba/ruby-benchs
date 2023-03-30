@@ -5,15 +5,9 @@ Dir.chdir("#{__dir__}/../railsbench") do
   require 'config/environment'
 end
 
-require_relative '../../tool/jt.rb'
-
 class BlogRailsRoutesTwoRoutesTwoRequests < Benchmarks 
 
   def initialize
-    Dir.chdir("#{__dir__}/../railsbench") do
-      JT.ruby_rebench(*%w[-S bundle exec bin/rails db:migrate db:seed RAILS_ENV=production])
-    end
-
     ENV['RAILS_ENV'] ||= 'production'
 
     @app = Rails.application
