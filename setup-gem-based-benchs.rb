@@ -11,7 +11,7 @@ RAILSBENCH_DIR = File.expand_path('../railsbench', __FILE__)
 def self.bundle_install(bench_path)
   Dir.chdir(bench_path) do
     JT.ruby_rebench(*%w[-S bundle install])
-    if (bench_path == RAILSBENCH_DIR) do
+    if (bench_path == RAILSBENCH_DIR)
       JT.ruby_rebench(*%w[-S bundle exec bin/rails db:migrate db:seed RAILS_ENV=production])
       JT.ruby_rebench_native(*%w[-S bundle exec bin/rails db:migrate db:seed RAILS_ENV=production])
     end
