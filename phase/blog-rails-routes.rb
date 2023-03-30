@@ -2,20 +2,19 @@
 $LOAD_PATH.unshift "#{__dir__}/../railsbench"
 Dir.chdir("#{__dir__}/../railsbench") do
   require 'bundler/setup'
+  require 'config/environment'
 end
 
 require_relative '../../tool/jt.rb'
 
-class BlogRailsRoutesTwoRoutesTwoRequests < Benchmarks 
+class BlogRailsRoutes < Benchmarks 
 
   def initialize
     Dir.chdir("#{__dir__}/../railsbench") do
-      JT.ruby_rebench(*%w[-S bundle exec bin/rails db:migrate db:seed RAILS_ENV=production])
+      JT.ruby(*%w[-S bundle exec bin/rails db:migrate db:seed RAILS_ENV=production])
     end
 
     ENV['RAILS_ENV'] ||= 'production'
-
-    require 'config/environment'
 
     @app = Rails.application
     possible_routes = ['/posts', '/posts.json']

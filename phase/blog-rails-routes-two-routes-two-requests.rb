@@ -2,6 +2,7 @@
 $LOAD_PATH.unshift "#{__dir__}/../railsbench"
 Dir.chdir("#{__dir__}/../railsbench") do
   require 'bundler/setup'
+  require 'config/environment'
 end
 
 require_relative '../../tool/jt.rb'
@@ -14,8 +15,6 @@ class BlogRailsRoutesTwoRoutesTwoRequests < Benchmarks
     end
 
     ENV['RAILS_ENV'] ||= 'production'
-
-    require 'config/environment'
 
     @app = Rails.application
     possible_routes = ['/posts', '/posts.json']
