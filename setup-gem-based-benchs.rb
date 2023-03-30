@@ -18,9 +18,9 @@ def self.bundle_install(bench_path)
   end
 end
 
-# bundle_install(MAIL_DIR)
-# bundle_install(PSYCH_DIR)
-# bundle_install(HEXAPDF_DIR)
-# bundle_install(LEE_DIR)
+bundle_install(MAIL_DIR)
+bundle_install(PSYCH_DIR)
+bundle_install(HEXAPDF_DIR)
+bundle_install(LEE_DIR)
 bundle_install(RAILSBENCH_DIR)
-# bundle_install(ERUBI_DIR)
+bundle_install(ERUBI_DIR)
