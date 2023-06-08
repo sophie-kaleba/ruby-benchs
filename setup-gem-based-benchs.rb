@@ -13,7 +13,7 @@ def self.bundle_install(bench_path)
     JT.ruby_rebench(*%w[-S bundle install])
     if (bench_path == RAILSBENCH_DIR)
       JT.ruby_rebench(*%w[-S bundle exec bin/rails db:migrate db:seed RAILS_ENV=production])
-      JT.ruby_rebench_native(*%w[-S bundle exec bin/rails db:migrate db:seed RAILS_ENV=production])
+      #JT.ruby_rebench_native(*%w[-S bundle exec bin/rails db:migrate db:seed RAILS_ENV=production]) not relying on native for now
     end
   end
 end
