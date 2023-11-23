@@ -1,0 +1,165 @@
+# truffleruby_primitives: true
+
+# Copyright (c) 2015-2016 Stefan Marr <git@stefan-marr.de>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the 'Software'), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#$LOAD_PATH.unshift Dir.children("./bench")
+HAS_ALLOC = RUBY_ENGINE == 'truffleruby' && Truffle::System.respond_to?(:allocated_bytes_of_current_thread)
+HAS_COMP_T = RUBY_ENGINE == 'truffleruby' && Truffle::Graal.respond_to?(:total_compilation_time)
+HAS_GC_T = GC.respond_to?(:total_time)
+HAS_GC_FLAG = GC.respond_to?(:stat)
+
+class Benchmarks
+  def inner_benchmark_loop(inner_iterations)
+    inner_iterations.times do
+      return false unless verify_result(benchmark)
+    end
+    true
+  end
+
+  def benchmark
+    raise 'subclass_responsibility'
+  end
+
+  # noinspection RubyUnusedLocalVariable
+  def verify_result(_result)
+    raise 'subclass_responsibility'
+  end
+end
+
+class Run
+  attr_accessor :name
+  attr_accessor :benchmark_suite
+  attr_accessor :num_iterations
+  attr_accessor :inner_iterations
+
+  def initialize(name)
+    @name             = name
+    @benchmark_suite  = load_benchmark_suite(name)
+    @total            = 0
+    @total_compilation_time = 0
+    @num_iterations   = 1
+    @inner_iterations = 1
+  end
+
+  def load_benchmark_suite(benchmark_name)
+    if File.exist?("#{File.dirname(__FILE__)}/#{benchmark_name.downcase}.rb")
+      benchmark_file = benchmark_name.downcase
+    else
+      # fallback, for benchmark files that use
+      # Ruby naming conventions instead of classic names
+      benchmark_file = benchmark_name.gsub(/([a-z])([A-Z])/) { "#{$1}-#{$2}" }.downcase
+    end
+    unless require_relative(benchmark_file)
+      raise "failed loading #{benchmark_file}"
+    end
+    Object.const_get(benchmark_name)
+  end
+
+  def run_benchmark
+    puts "Starting #{@name} benchmark ..."
+    do_runs(@benchmark_suite.new)
+    report_benchmark
+    puts ''
+  end
+
+  def measure(bench)
+    start_compile_total = HAS_COMP_T ? Truffle::Graal.total_compilation_time : 0
+    start_gc_total = HAS_GC_T ? GC.total_time : 0
+    start_allocated = HAS_ALLOC ? Truffle::System.allocated_bytes_of_current_thread : 0
+    gc_time, gc_count, gc_minor_count, gc_major_count, gc_unknown_count, gc_used, gc_committed, gc_init, gc_max = Primitive.gc_stat
+
+   # Primitive.monitor_calls true
+    start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
+    unless bench.inner_benchmark_loop(@inner_iterations)
+      raise 'Benchmark failed with incorrect result'
+    end
+    end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
+    # Primitive.monitor_calls false
+
+    end_allocated = HAS_ALLOC ? Truffle::System.allocated_bytes_of_current_thread : 0
+    end_gc_total = HAS_GC_T ? GC.total_time : 0
+    end_compile_total = HAS_COMP_T ? Truffle::Graal.total_compilation_time : 0
+    end_gc_time, end_gc_count, end_gc_minor_count, end_gc_major_count, end_gc_unknown_count, end_gc_used, end_gc_committed, end_gc_init, end_gc_max = Primitive.gc_stat
+
+    compile_total = (end_compile_total - start_compile_total) 
+
+    puts "#{@name}: GC time:      #{(end_gc_total - start_gc_total)/1000000}ms"
+    puts "#{@name}: Compile time: #{compile_total}ms"
+    puts "#{@name}: Allocated:    #{(end_allocated - start_allocated)}bytes"
+    puts "#{@name}: GC time: #{(end_gc_time - gc_time)/1000000}ms"
+    puts "#{@name}: GC count: #{(end_gc_count - gc_count)}col"
+    puts "#{@name}: Minor count: #{(end_gc_minor_count - gc_minor_count)}col"
+    puts "#{@name}: Major count: #{(end_gc_major_count - gc_major_count)}col"
+    puts "#{@name}: Unknown count: #{(end_gc_unknown_count - gc_unknown_count)}col"
+    puts "#{@name}: Heap used: #{(end_gc_used)}bytes"
+    puts "#{@name}: Committed: #{(end_gc_committed - gc_committed)}bytes"
+    puts "#{@name}: Init heap size: #{(gc_init)}bytes"
+    puts "#{@name}: Max heap size: #{(gc_max)}bytes"
+
+    run_time = (end_time - start_time) / 1000
+    print_result(run_time)
+    @total += run_time
+    @total_compilation_time += compile_total
+  end
+
+  def do_runs(bench)
+    @num_iterations.times { measure(bench) }
+  end
+
+  def report_benchmark
+    puts "#{@name}: iterations=#{@num_iterations} average: #{@total / @num_iterations}us total: #{@total}us\n"
+  end
+
+  def print_result(run_time)
+    puts "#{@name}: iterations=1 runtime: #{run_time}us"
+  end
+
+  def print_total
+    puts "Total Runtime: #{@total}us"
+  end
+end
+
+def process_arguments(args)
+  run = Run.new(args[0])
+
+  if args.size > 1
+    run.num_iterations = Integer(args[1])
+    run.inner_iterations = Integer(args[2]) if args.size > 2
+  end
+  run
+end
+
+def print_usage
+  puts './harness.rb [benchmark] [num-iterations [inner-iter]]'
+  puts ''
+  puts '  benchmark      - benchmark class name '
+  puts '  num-iterations - number of times to execute benchmark, default: 1'
+  puts '  inner-iter     - number of times the benchmark is executed in an inner loop, '
+  puts '                   which is measured in total, default: 1'
+end
+
+if ARGV.size < 1
+  print_usage
+  exit 1
+end
+
+run = process_arguments(ARGV)
+run.run_benchmark
+run.print_total
