@@ -14,7 +14,7 @@ class BlogRailsRoutes < Benchmarks
     possible_routes = ['/posts', '/posts.json']
     possible_routes.concat((1..100).map { |i| "/posts/#{i}"})
     
-    visit_count = 2000
+    visit_count = 1000
     rng = Random.new(0x1be52551fc152997)
     @visiting_routes = Array.new(visit_count) { possible_routes.sample(random: rng) }
   end
